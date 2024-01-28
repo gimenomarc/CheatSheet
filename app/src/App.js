@@ -7,6 +7,7 @@ function App() {
   const [linuxCommands, setLinuxCommands] = useState([]);
   const [windowsCommands, setWindowsCommands] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [visibleCommands, setVisibleCommands] = useState(20);
 
   useEffect(() => {
     fetch('http://localhost:3000/linux-commands')
@@ -18,13 +19,18 @@ function App() {
       .then(data => setWindowsCommands(data));
   }, []);
 
-  const filteredLinuxCommands = linuxCommands.filter(command =>
-    command.command.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLinuxCommands = linuxCommands
+    .filter(command => command.command.toLowerCase().includes(searchTerm.toLowerCase()))
+    .slice(0, visibleCommands);
 
-  const filteredWindowsCommands = windowsCommands.filter(command =>
-    command.command.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredWindowsCommands = windowsCommands
+    .filter(command => command.command.toLowerCase().includes(searchTerm.toLowerCase()))
+    .slice(0, visibleCommands);
+
+  const handleLoadMore = () => {
+
+    setVisibleCommands(prevVisibleCommands => prevVisibleCommands + 20);
+  };
 
   return (
     <div className="bg-gray-900 text-white min-h-screen p-8 flex flex-col items-center">
@@ -59,6 +65,11 @@ function App() {
           ))}
         </div>
       </div>
+      {visibleCommands < linuxCommands.length && (
+        <button className="bg-blue-500 text-white px-4 py-2 rounded mt-4" onClick={handleLoadMore}>
+          More
+        </button>
+      )}
       <Footer />
     </div>
   );
