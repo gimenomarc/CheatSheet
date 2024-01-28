@@ -4,16 +4,25 @@ import Command from './Components/Command';
 import Footer from './Components/Footer';
 
 function App() {
-  const [commands, setCommands] = useState([]);
+  const [linuxCommands, setLinuxCommands] = useState([]);
+  const [windowsCommands, setWindowsCommands] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:3000/linux-commands')
       .then(response => response.json())
-      .then(data => setCommands(data));
+      .then(data => setLinuxCommands(data));
+
+    fetch('http://localhost:3000/windows-commands')
+      .then(response => response.json())
+      .then(data => setWindowsCommands(data));
   }, []);
 
-  const filteredCommands = commands.filter(command =>
+  const filteredLinuxCommands = linuxCommands.filter(command =>
+    command.command.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredWindowsCommands = windowsCommands.filter(command =>
     command.command.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -26,15 +35,29 @@ function App() {
         className="bg-gray-800 text-white p-2 rounded-md mb-8"
         onChange={e => setSearchTerm(e.target.value)}
       />
-      <div className="w-full max-w-screen-md">
-        {filteredCommands.map((command, index) => (
-          <Command
-            key={index}
-            command={command.command}
-            description={command.description}
-            example={command.example}
-          />
-        ))}
+      <div className="flex">
+        <div className="mr-4">
+          <h2 className="text-xl font-bold mb-4 text-white">Linux Commands</h2>
+          {filteredLinuxCommands.map((command, index) => (
+            <Command
+              key={index}
+              command={command.command}
+              description={command.description}
+              example={command.example}
+            />
+          ))}
+        </div>
+        <div className="">
+          <h2 className="text-xl font-bold mb-4 text-white">Windows Commands</h2>
+          {filteredWindowsCommands.map((command, index) => (
+            <Command
+              key={index}
+              command={command.command}
+              description={command.description}
+              example={command.example}
+            />
+          ))}
+        </div>
       </div>
       <Footer />
     </div>
